@@ -1,4 +1,4 @@
 Flask
-gunicorn
 pymongo
-dnspython
+python-dotenv
+gunicorn
