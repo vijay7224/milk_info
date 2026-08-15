@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milk Information System</title>
+    <style>
+        :root {
+            --primary: #0d9488;          /* Teal */
+            --primary-dark: #0f766e;
+            --primary-light: #ccfbf1;
+            --accent: #f97316;           /* Soft orange accent */
+            --bg: #f8fafc;               /* Very soft gray-blue */
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #f8fafc 50%, #f1f5f9 100%);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* ========== NAVBAR ========== */
+        header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.5rem;
+            height: 66px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 0.95rem;
+            border-radius: 9px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        nav a.logout-link {
+            color: var(--danger);
+        }
+
+        nav a.logout-link:hover {
+            background: #fef2f2;
+        }
+
+        /* ========== MAIN ========== */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2.2rem 1.25rem 3rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .page-title h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* ========== ALERTS ========== */
+        .alert {
+            padding: 0.95rem 1.15rem;
+            border-radius: 11px;
+            margin-bottom: 1.3rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .alert.success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert.error, .alert.danger {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .alert.info {
+            background: #f0fdfa;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+        }
+
+        /* ========== CARD ========== */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.9rem;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* ========== FORM ========== */
+        .form-group {
+            margin-bottom: 1.3rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 0.45rem;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.78rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #fff;
+            transition: all 0.2s ease;
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: #94a3b8;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.1rem;
+        }
+
+        /* ========== TOTAL BOX ========== */
+        .total-box {
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            color: white;
+            border-radius: 14px;
+            padding: 1.2rem 1.35rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.6rem 0 1.8rem;
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.25);
+        }
+
+        .total-box span {
+            font-weight: 500;
+            font-size: 0.98rem;
+            display: block;
+        }
+
+        .total-box small {
+            opacity: 0.85;
+            font-size: 0.8rem;
+        }
+
+        .total-box strong {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* ========== BUTTON ========== */
+        .btn {
+            width: 100%;
+            padding: 0.95rem;
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            color: white;
+            border: none;
+            border-radius: 11px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 148, 136, 0.35);
+            background: linear-gradient(135deg, #0f766e, #115e59);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* ========== ADMIN INFO ========== */
+        .admin-info {
+            margin-top: 1.8rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.15rem 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-info > span {
+            font-size: 1.6rem;
+        }
+
+        .admin-info strong {
+            display: block;
+            font-size: 0.97rem;
+            margin-bottom: 0.15rem;
+            color: var(--text);
+        }
+
+        .admin-info p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .admin-info a {
+            margin-left: auto;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+        }
+
+        .admin-info a:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.15rem;
+            }
+
+            nav a {
+                padding: 0.4rem 0.65rem;
+                font-size: 0.88rem;
+            }
+
+            .container {
+                padding: 1.6rem 1rem 2.5rem;
+            }
+
+            .card {
+                padding: 1.4rem;
+            }
+
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+
+            .admin-info {
+                flex-wrap: wrap;
+            }
+
+            .admin-info a {
+                margin-left: 0;
+                width: 100%;
+                text-align: right;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+<header>
+    <div class="logo">🥛 Milk Information System</div>
+    <nav>
+        <a href="/">Milk Entry</a>
+        <!-- 
+        <a href="/dashboard">Dashboard</a>
+        <a href="/history">History</a>
+        <a href="/admin/logout" class="logout-link">Logout</a>
+        -->
+        <a href="/admin/login">🔐 Admin Login</a>
+    </nav>
+</header>
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+<main class="container">
+
+    <div class="page-title">
+        <h1>🥛 Milk Entry</h1>
+        <p>Enter daily milk collection details</p>
+    </div>
+
+    <!-- Flash Messages Example -->
+    <!-- 
+    <div class="alert success">✅ Milk data saved successfully!</div>
+    <div class="alert error">❌ Please fill all required fields.</div>
+    -->
+
+    <div class="card">
+        <form action="/add" method="POST" id="milkForm">
+
+            <div class="form-group">
+                <label for="date">📅 Date</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="farmer_name">👨‍🌾 Farmer / Customer Name</label>
+                <input type="text" id="farmer_name" name="farmer_name"
+                       placeholder="Enter farmer or customer name"
+                       autocomplete="off" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="quantity">🥛 Quantity (Litres)</label>
+                    <input type="number" id="quantity" name="quantity"
+                           min="0" step="0.01" placeholder="e.g. 12.5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quality">🧪 Milk Quality</label>
+                    <select id="quality" name="quality" required>
+                        <option value="">Select Quality</option>
+                        <option value="Excellent">Excellent</option>
+                        <option value="Good">Good</option>
+                        <option value="Average">Average</option>
+                        <option value="Poor">Poor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="fat">🧪 FAT (%)</label>
+                    <input type="number" id="fat" name="fat"
+                           min="0" max="100" step="0.01" placeholder="e.g. 4.2">
+                </div>
+
+                <div class="form-group">
+                    <label for="snf">🧪 SNF (%)</label>
+                    <input type="number" id="snf" name="snf"
+                           min="0" max="100" step="0.01" placeholder="e.g. 8.5">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="price">💰 Price per Litre (₹)</label>
+                <input type="number" id="price" name="price"
+                       min="0" step="0.01" placeholder="e.g. 48" required>
+            </div>
+
+            <div class="total-box">
+                <div>
+                    <span>💰 Total Amount</span>
+                    <small>Quantity × Price per Litre</small>
+                </div>
+                <strong>₹ <span id="total">0.00</span></strong>
+            </div>
+
+            <button type="submit" class="btn" id="saveButton">
+                💾 Save Milk Data
+            </button>
+        </form>
+    </div>
+
+    <div class="admin-info">
+        <span>🔐</span>
+        <div>
+            <strong>Admin Access</strong>
+            <p>Login to view Dashboard and Milk History</p>
+        </div>
+        <a href="/admin/login">Admin Login →</a>
+    </div>
+
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.getElementById("date");
+        if (!dateInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+
+        const quantity = document.getElementById("quantity");
+        const price = document.getElementById("price");
+        const total = document.getElementById("total");
+
+        function calculateTotal() {
+            const qty = parseFloat(quantity.value) || 0;
+            const prc = parseFloat(price.value) || 0;
+            total.textContent = (qty * prc).toFixed(2);
+        }
+
+        quantity.addEventListener("input", calculateTotal);
+        price.addEventListener("input", calculateTotal);
+        calculateTotal();
+    });
+</script>
+
+</body>
+</html>
